@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autonomous Control Center</title>
+    <style>
+        body { background: #1b1b1b; color: white; font-family: sans-serif; text-align: center; }
+        .btn { padding: 20px; margin: 10px; font-size: 20px; cursor: pointer; background: #444; color: white; border: none; border-radius: 8px; }
+        #status { color: #0f0; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Pi Car Remote (GitHub Hosted)</h1>
+    
+    <!-- Input for your Pi's Local IP -->
+    <input type="text" id="pi_ip" placeholder="Enter Pi IP (e.g. 192.168.1.10)">
+    <br><br>
+
+    <button class="btn" onclick="sendCommand('forward')">Forward</button>
+    <button class="btn" onclick="sendCommand('stop')">Stop</button>
+    
+    <div id="status">Status: Waiting for command...</div>
+
+    <script>
+        async function sendCommand(action) {
+            const ip = document.getElementById('pi_ip').value;
+            const status = document.getElementById('status');
+            
+            if(!ip) { alert("Please enter your Pi's IP address!"); return; }
+
+            try {
+                // This sends the command to the Python code running on your Pi
+                const response = await fetch(`http://${ip}:5000/drive?action=${action}`);
+                const data = await response.text();
+                status.innerText = "Status: " + data;
+            } catch (error) {
+                status.innerText = "Status: Connection Failed. Is the Pi server running?";
+            }
+        }
+    </script>
+</body>
+</html>
